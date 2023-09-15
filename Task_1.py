@@ -61,4 +61,52 @@ def record_info():
     
     
 def search_and_delete_contact():
-    
+    phone_book = read_file("phone.csv")
+    search_name = input("Введите имя контакта для поиска или удаления: ")
+    found_contacts = []
+    for contact in phone_book:
+        if contact["Имя"] == search_name:
+            found_contacts.append(contact)
+    if len(found_contacts) == 0:
+        print("Контакт не найден")
+    else:
+        print("Найденные контакты:")
+        for contact in found_contacts:
+            print(contact)
+        delete_choice = input("Хотите удалить найденные контакты? (y/n): ")
+        if delete_choice == "y":
+            updated_phone_book = [contact for contact in phone_book if contact not in found_contacts]
+            with open("phone.csv", "w", encoding="utf-8") as f_n:
+                f_n_writer = DictWriter(f_n, fieldnames=["Фамилия", "Имя", "Номер"])
+                f_n_writer.writeheader()
+                f_n_writer.writerows(updated_phone_book)
+            print("Контакты успешно удалены")
+        else:
+            print("Удаление отменено")
+            
+            
+def main():
+    while True:
+        command = input("Введите команду: ")
+        if command == "q":
+            break
+        elif command == "r":
+            if not exists("phone.csv"):
+                print("Файл не создан")
+                break
+            print(*read_file("phone.csv"))
+        elif command == "w":
+            if not exists("phone.csv"):
+                create_file()
+                record_info()
+            else:
+                record_info()
+        elif command == "d":
+            if not exists("phone.csv"):
+                print("Файл не создан")
+                break
+            search_and_delete_contact()
+
+
+if __name__ == "__main__":
+    main()
